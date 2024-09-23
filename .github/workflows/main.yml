@@ -4,22 +4,38 @@ on:
   workflow_dispatch:
 
 jobs:
+  start-vm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+
+      - name: Start GCE VM
+        run: |
+          gcloud compute instances start github-test-instance --zone=us-central1-a
+  
   run-script:
     runs-on: self-hosted
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      # - name: Set up Python
-      #   uses: actions/setup-python@v2
-      #   with:
-      #     python-version: '3.x'
-
-      # - name: Install dependencies
-      #   run: |
-      #     pip install -r requirements.txt
-
       - name: Run bash script
         run: |
           chmod +x run_query.sh
           bash run_query.sh github-actions-testing-435312
+
+  stop-vm:
+    needs: run-script
+    runs-on: ubuntu-latest
+    steps:
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+
+      - name: Stop GCE VM
+        run: |
+          gcloud compute instances stop github-test-instance --zone=us-central1-a
