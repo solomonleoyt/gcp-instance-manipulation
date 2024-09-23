@@ -7,6 +7,9 @@ jobs:
   start-vm:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
       - name: Authenticate to GCP
         uses: google-github-actions/auth@v1
         with:
@@ -17,10 +20,11 @@ jobs:
           gcloud compute instances start github-test-instance --zone=us-central1-a
   
   run-script:
+    needs: start-vm
     runs-on: self-hosted
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Run bash script
         run: |
@@ -31,6 +35,9 @@ jobs:
     needs: run-script
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
       - name: Authenticate to GCP
         uses: google-github-actions/auth@v1
         with:
