@@ -1,3 +1,4 @@
+Note: this repo is not yet completed, it's under development
 # gcp-instance-manipulation
 
 ### Purpose of the repository
